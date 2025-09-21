@@ -2,10 +2,7 @@
 import * as THREE from 'three';
 import { Sector } from "./ColorConverter.js";
 // @ts-ignore
-import { Text } from 'https://cdn.jsdelivr.net/npm/troika-three-text@0.52.4/+esm';
-// @ts-ignore
-import { BatchedText } from 'https://cdn.jsdelivr.net/npm/troika-three-text@0.52.4/+esm';
-// @ts-ignore
+import { Text, BatchedText } from 'troika-three-text';
 import {
     /** @type {import('./TypeDefs.js').StarSystem[]} */
     mapData,
