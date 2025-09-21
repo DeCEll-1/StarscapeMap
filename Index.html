@@ -1,0 +1,278 @@
+﻿<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./css/LayoutCSS.css" asp-append-version="true" />
+    <link rel="stylesheet" href="./css/MapCSS.css" />
+
+    <meta content="Starscape Web Map" property="og:title" /> <!-- embed title -->
+    <meta content="Brought to you by NBI" property="og:description" /> <!-- description -->
+    <meta content="https://decell-1.github.io/StarscapeMap" property="og:url" />
+    <!-- embed click link -->
+
+    <meta property="og:image" content="https://decell-1.github.io/StarscapeMap/Resources/NBIImages/Example.png">
+    <!-- embed image -->
+
+    <meta content="#472C6D" data-react-helmet="true" name="theme-color" /> <!-- embed color -->
+    <meta name="twitter:card" content="summary_large_image"> <!-- make the embed larger -->
+
+    <link rel="apple-touch-icon" sizes="57x57" href="Resources/Favicons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="Resources/Favicons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="Resources/Favicons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="Resources/Favicons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="Resources/Favicons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="Resources/Favicons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="Resources/Favicons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="Resources/Favicons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="Resources/Favicons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="Resources/Favicons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="Resources/Favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="Resources/Favicons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Resources/Favicons/favicon-16x16.png">
+    <link rel="manifest" href="Resources/Favicons/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>NBI</title>
+    <script type="importmap">
+                {
+                  "imports": {
+                    "three": "/three/build/three.module.js",
+                    "three/addons/": "/three/examples/jsm/"
+                  }
+                }
+    </script>
+
+</head>
+
+<body>
+
+
+    <header>
+        <nav id="intro" class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
+            <div class="logo-wrapper d-flex justify-content-center align-items-center flex-grow-1">
+                <div id="intro-nbi-logo" class="nav-item">
+                    <img src="resources/NBIImages/nbi.png" alt="nbi" class="img-fluid">
+                </div>
+
+                <div id="center-logo" class="nav-item" style="visibility: hidden;">
+                    <img id="center-logo-img" src="resources/NBIImages/nbi.png" alt="nbi">
+                </div>
+            </div>
+
+            <div class="container-fluid" style="position: absolute;">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+
+                    <ul class="navbar-nav flex-grow-1 intro-element">
+                        <li class="nav-item">
+                            <div class="nav-link text-light">Brought to you by NBI.</div>
+                        </li>
+                        <li class="nav-item ms-auto me-5">
+                            <style>
+                                #joinNBI:hover {
+                                    outline: solid;
+                                    outline-color: #9b59b6;
+
+                                }
+                            </style>
+                            <a id="joinNBI" class="nav-link text-light btn"
+                                href="https://decell-1.github.io/Nebula-Industries-Propoganda/" target="_blank">Join NBI
+                                Here!</a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div id="content-cover"></div>
+
+    <div style="padding-top: 50px; height: calc(100vh);" class="w-100 d-flex">
+        <div class="w-100 flex-fill intro-element">
+
+            <div id="mapCanvas" class="w-100 h-100" style="height:100vh; position:relative;">
+                <div class="position-absolute canvas-ignore" style="width:22%">
+                    <div class="position-absolute" style="width:49%">
+                        <div class="map-menu-container input-group-sm" style="">
+                            <div class="">
+                                <label for="">Search</label>
+                                <input type="text" class="form-control map-menu-input-text" autocomplete="off"
+                                    placeholder="System name" aria-label="System name" id="TBSystemSearch">
+                            </div>
+
+                            <div id="loadingStatus" style="visibility: hidden; height: 0;">
+                                <label id="loadingText" for="loadingAnimation"></label>
+                                <div id="loadingAnimation" class="spinner-border text-secondary spinner-border-sm"
+                                    role="status">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="map-menu-container input-group-sm mt-2" style="">
+                            <label>Star Coloring</label>
+                            <hr class="m-0" style="border: 1px solid white;">
+                            <div class="form-check form-check-inline text-center">
+                                <input class="form-check-input form-control" type="radio" name="StarColoring"
+                                    id="RadioButtonSecurity" value="RadioButtonSecurity" checked>
+                                <label class="form-check-label text-light" for="RadioButtonSecurity">Security</label>
+                            </div>
+                            <div class="form-check form-check-inline text-center">
+                                <input class="form-check-input form-control" type="radio" name="StarColoring"
+                                    id="RadioButtonSpectral" value="RadioButtonSpectral">
+                                <label class="form-check-label text-light" for="RadioButtonSpectral">Spectral</label>
+                            </div>
+                            <div class="form-check form-check-inline text-center">
+                                <input class="form-check-input form-control" type="radio" name="StarColoring"
+                                    id="RadioButtonSpice" value="RadioButtonSpice">
+                                <label class="form-check-label text-light" for="RadioButtonSpice">Spice</label>
+                            </div>
+                        </div>
+
+                        <div class="map-menu-container input-group-sm mt-2" style="">
+                            <label>Map Layers</label>
+                            <hr class="m-0" style="border: 1px solid white;">
+                            <div class="form-check form-check-inline text-center">
+                                <input class="form-check-input form-control" type="checkbox" id="CBSystems"
+                                    value="CBSystems" onclick="flipSystemVisibility(this)" checked>
+
+                                <label class="form-check-label text-light" for="CBSystems">
+                                    Systems
+                                </label>
+                            </div>
+
+                            <div class="form-check form-check-inline text-center">
+                                <input class="form-check-input form-control" type="checkbox" id="CBLinks"
+                                    value="CBLinks" onclick="flipLinkVisibility(this)" checked>
+
+                                <label class="form-check-label text-light" for="CBLinks">Links</label>
+                            </div>
+
+                            <div class="form-check form-check-inline text-center">
+                                <input class="form-check-input form-control" type="checkbox" id="CBSystemNames"
+                                    value="CBSystemNames" onclick="flipTextVisibility(this)" checked>
+
+                                <label class="form-check-label text-light" for="CBSystemNames">
+                                    System Names
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id="searchResultsContainer" class="map-menu-container input-group-sm float-end"
+                        style="width: 49%; visibility: hidden; height: 0px; padding: 0;">
+                        <div>
+                            <label>Search Results</label>
+                            <div class="float-end">
+                                <label onclick="clearValue('TBSystemSearch')">X</label>
+                            </div>
+                        </div>
+                        <hr class="m-0" style="border: 1px solid white;">
+                        <ul class="ps-3 mb-0" id="searchResults">
+                        </ul>
+                    </div>
+
+                </div>
+
+                <div class="position-absolute row w-100 canvas-ignore" style="pointer-events: none;">
+                    <div class="col-4 canvas-ignore" style="pointer-events: none;"></div>
+                    <div class="col-4 canvas-ignore" style="margin-top: 60vh; height: 18vh; pointer-events: all;">
+                        <div class="h-100 d-flex flex-column justify-content-between" style="margin: 0 13%;">
+
+                            <div class="selection-box-border bg-system-name" style="height: 45%;">
+                                <div id="selectionText" class="text-center align-items-center mt-1">
+                                    SELECTION_ID
+                                </div>
+                            </div>
+
+                            <div class="text-center container m-0 p-0" style="height: 51%;">
+
+                                <div class="container">
+                                    <div class="row">
+                                        <button type="button"
+                                            class="m-1 mb-0 col selection-button selection-box-border selection-box-disabled"
+                                            data-bs-toggle="modal" data-bs-target="#RESTRICTED1">
+                                            [RESTRICTED]
+                                        </button>
+                                        <button type="button"
+                                            class="m-1 mb-0 col selection-button selection-box-border selection-box-disabled"
+                                            data-bs-toggle="modal" data-bs-target="#RESTRICTED2">
+                                            [RESTRICTED]
+                                        </button>
+                                        <div class="w-100 bg-black"></div>
+                                        <div
+                                            class="m-1 col selection-button selection-box-border selection-box-disabled">
+                                            [RESTRICTED]
+                                        </div>
+                                        <div
+                                            class="m-1 col selection-button selection-box-border selection-box-disabled">
+                                            [RESTRICTED]
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4" style="pointer-events: none;"></div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module">
+        import { instancedCylinders, instancedSpheres, instancedText } from '/js/Map/Main.js';
+
+        window.isNumeric = (str) => {
+            return !isNaN(str) && !isNaN(parseFloat(str));
+        }
+
+        window.enforceMinMax = (e) => {
+            if (e.data !== null && !/^[0-9]$/.test(e.data)) {
+                e.preventDefault(); // block non-numeric input
+                return;
+            }
+            const el = e.target;
+            if (el.value != "") {
+                if (parseInt(el.value + e.data) < parseInt(el.min)) {
+                    e.preventDefault();
+                }
+                if (parseInt(el.value + e.data) > parseInt(el.max)) {
+                    e.preventDefault();
+                }
+            }
+        }
+
+        window.clearValue = (id) => {
+            const el = document.getElementById(id);
+            el.value = '';
+            el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+        }
+
+        window.flipSystemVisibility = (el) => {
+            instancedSpheres.visible = el.checked;
+        }
+
+        window.flipLinkVisibility = (el) => {
+            instancedCylinders.visible = el.checked;
+        }
+
+        window.flipTextVisibility = (el) => {
+            instancedText.visible = el.checked;
+        }
+
+    </script>
+
+    <script src="./lib/jquery/dist/jquery.min.js"></script>
+    <script src="./lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="./js/Map/Main.js"></script>
+    <script src="./js/LayoutJS.js" asp-append-version="true"></script>
+</body>
+
+</html>

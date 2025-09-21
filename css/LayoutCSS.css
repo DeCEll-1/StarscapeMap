@@ -1,0 +1,264 @@
+﻿/*#region body */
+body::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: url("/Resources/SVG/LayoutBackground.svg") repeat;
+    mix-blend-mode: darken;
+    pointer-events: none;
+    /* background: url("/Resources/SVG/LayoutBackground.svg") repeat; */
+    /* mix-blend-mode: overlay; */
+    /* pointer-events: none; */
+    z-index: -2;
+}
+
+body {
+    overflow: hidden;
+    background-color: #000000;
+
+    height: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    color: white;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: linear-gradient(135deg, #000000 0%, rgba(61, 37, 84, 0.3) 50%, #000000 100%);
+    pointer-events: none;
+
+    /* White background layer */
+    z-index: -2;
+}
+
+/*#endregion */
+
+/*#region intro */
+#intro {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    overflow: hidden;
+    animation: slideUpAndShrink 2s forwards;
+}
+
+#intro::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(135deg, #000000 0%, #100A1666 40%, #100A1666 65%, #000000 100%);
+    background-repeat: repeat;
+    background-blend-mode: overlay;
+    animation: opacityChangeIntro 2s forwards;
+    /* set opacity here */
+    z-index: -1;
+}
+
+#intro.no-animation {
+    animation: slideUpAndShrink 0s forwards;
+}
+
+
+@keyframes opacityChangeIntro {
+    0% {
+        opacity: 0;
+    }
+
+    80% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUpAndShrink {
+    0% {
+        transform: translateY(100%);
+        height: 100%;
+        font-size: 2rem;
+        align-items: center;
+    }
+
+    60% {
+        transform: translateY(0);
+        height: 100%;
+        font-size: 2rem;
+        align-items: center;
+    }
+
+    100% {
+        transform: translateY(0);
+        height: 46px;
+        font-size: 1rem;
+        padding-left: 1rem;
+        align-items: center;
+    }
+}
+
+/* 52.5 center of gradient */
+/* takes total 4 seconds to finish intro */
+#intro-nbi-logo {
+    width: 40px;
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: slideUpAndShrinkLogo 2s forwards;
+    overflow: hidden;
+}
+
+.intro-nbi-logo-skip-first-animation {
+    animation: slideUpAndShrinkLogo 0s forwards;
+}
+
+@keyframes slideUpAndShrinkLogo {
+    0% {
+        height: 256px;
+        width: 256px;
+    }
+
+    60% {
+        opacity: 1;
+        height: 256px;
+        width: 256px;
+    }
+
+    100% {
+        opacity: 0;
+        height: 40px;
+        width: 40px;
+    }
+}
+
+#center-logo {
+    width: 40px;
+    height: 40px;
+    align-items: center;
+}
+
+#center-logo-img {
+    width: 40px;
+    height: 40px;
+}
+
+@keyframes slideToLeftFromRight {
+    0% {
+        /* transform: translateX(50vw); */
+        opacity: 0;
+    }
+
+    /* 25% {
+        opacity: 0.5;
+    } */
+
+    50% {
+        opacity: 1;
+        transform: translateX(0vw);
+        /* transform: translateX(16vw); */
+        /* margin-left: 40px; */
+    }
+
+    100% {
+        transform: translateX(50vw) translateX(-35px);
+        opacity: 1;
+    }
+}
+
+#content-cover {
+    position: relative;
+    z-index: 999;
+    width: 100%;
+    height: 100vh;
+    animation: shrinkToTop 2s forwards;
+}
+
+#content-cover.no-animation {
+    height: 0;
+    animation: none;
+}
+
+@keyframes shrinkToTop {
+    0% {
+        height: 100vh;
+        font-size: 2rem;
+        align-items: center;
+    }
+
+    60% {
+        transform: translateY(0);
+        height: 100vh;
+        font-size: 2rem;
+        align-items: center;
+    }
+
+    100% {
+        transform: translateY(0);
+        height: 0px;
+        z-index: -999;
+        font-size: 1rem;
+        padding-left: 1rem;
+        align-items: center;
+    }
+}
+
+.logo-wrapper {
+    position: absolute;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.intro-element {
+    animation: elementFadeIn 4s forwards;
+}
+
+.intro-element-skip-first-animation {
+    animation: elementFadeIn 1s forwards;
+}
+
+@keyframes elementFadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/*#endregion*/
+
+input::placeholder {
+    color: var(--bs-light) !important;
+    opacity: 1;
+}
