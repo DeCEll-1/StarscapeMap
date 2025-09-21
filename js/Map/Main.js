@@ -32,8 +32,8 @@ let mapData;
 /** @type {import('./TypeDefs.d.ts').Connection[]} */
 let connectionsData;
 Promise.all([
-    fetch('../../Resources/Json/map.json').then(r => r.json()),
-    fetch('../../Resources/Json/cylinders.json').then(r => r.json())
+    fetch('./../../Resources/Json/map.json').then(r => r.json()),
+    fetch('./../../Resources/Json/cylinders.json').then(r => r.json())
 ]).then(([map, connections]) => {
     mapData = map;
     connectionsData = connections;
