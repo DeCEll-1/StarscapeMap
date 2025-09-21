@@ -12,7 +12,6 @@ body::after {
     pointer-events: none;
     /* background: url("/Resources/SVG/LayoutBackground.svg") repeat; */
     /* mix-blend-mode: overlay; */
-    /* pointer-events: none; */
     z-index: -2;
 }
 
@@ -129,6 +128,7 @@ body::before {
     z-index: 1000;
     animation: slideUpAndShrinkLogo 2s forwards;
     overflow: hidden;
+    pointer-events: none;
 }
 
 .intro-nbi-logo-skip-first-animation {

@@ -26,14 +26,17 @@ import { Sector } from "./ColorConverter.js";
 // im not even using ts but the IDE keeps nagging
 "use strict";
 
+const repoName = "StarscapeMap"; // replace with your repo name
+const basePath = window.location.hostname === "127.0.0.1" ? "." : `/${repoName}`;
+
 /** @type {import('./TypeDefs.d.ts').StarSystem[]} */
 let mapData;
 
 /** @type {import('./TypeDefs.d.ts').Connection[]} */
 let connectionsData;
 Promise.all([
-    fetch('/StarscapeMap/Resources/Json/map.json').then(r => r.json()),
-    fetch('/StarscapeMap/Resources/Json/cylinders.json').then(r => r.json())
+    fetch(`${basePath}/Resources/Json/map.json`).then(r => r.json()),
+    fetch(`${basePath}/Resources/Json/cylinders.json`).then(r => r.json())
 ]).then(([map, connections]) => {
     mapData = map;
     connectionsData = connections;
