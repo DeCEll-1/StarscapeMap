@@ -90,7 +90,7 @@ function init() {
         75, // pov
         width / height, // ratio
         0.1, // near dist
-        100000 // far dist
+        4000 // far dist
     );
 
     // add ambient light

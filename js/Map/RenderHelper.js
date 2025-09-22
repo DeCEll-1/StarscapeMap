@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { Sector } from "./ColorConverter.js";
 // @ts-ignore
-import { Text, BatchedText } from 'troika-three-text';
+import { Text, BatchedText, preloadFont } from 'troika-three-text';
 import {
     /** @type {import('./TypeDefs.js').StarSystem[]} */
     mapData,
@@ -49,8 +49,8 @@ function RenderSystems(scene) {
     // create our geometry that we gonna use for instances
     const sphere = new THREE.SphereGeometry(
         8.5, // radius
-        32, // sector count
-        16  // stack count
+        8, // sector count
+        8  // stack count
     );
     // create the instanced mesh
     const instancedSpheres = new THREE.InstancedMesh(
@@ -106,9 +106,9 @@ function RenderLinks(scene) {
 
     const tubeGeometry = new THREE.TubeGeometry(
         path,   // see path
-        8,      // stack count
+        1,      // stack count
         0.7,      // radius
-        24,     // sector count
+        3,     // sector count
         false
     );
     // create the instanced mesh
@@ -173,6 +173,9 @@ function RenderLinks(scene) {
 
 }
 
+const repoName = "StarscapeMap"; // replace with your repo name
+const basePath = window.location.hostname === "127.0.0.1" ? "." : `/${repoName}`;
+
 async function RenderText(scene) {
 
     let i = 0;
@@ -184,9 +187,11 @@ async function RenderText(scene) {
 
     loadingStatusElement.style.visibility = "visible";
     loadingStatusElement.style.height = "auto";
+
     const syncPromises = mapData.map(system => {
         const text = new Text();
         text.text = system.name;
+        text.font = `${basePath}/Resources/Fonts/MICROSS.TTF`;
         text.fontSize = 10.5;
         text.anchorX = 'center';
         text.anchorY = 'middle';
@@ -202,22 +207,10 @@ async function RenderText(scene) {
         text.position.y = (system.position[2] + 10) / scale;
         text.position.z = (system.position[1] - 180) / scale;
 
-
-        // Wait for troika to generate geometry
-        const promise = new Promise(resolve => {
-            text.sync(() => {
-                loadingTextElement.innerHTML = "Loading " + Math.floor((i / mapData.length) * 100) + "%";
-                i++;
-                resolve();
-            });
-        });
-
         batchText.addText(text);
-
-        return promise;
     });
 
-    await Promise.all(syncPromises);
+    await new Promise(resolve => batchText.sync(resolve));
 
     loadingStatusElement.style.visibility = "hidden";
     loadingStatusElement.style.height = "0";
