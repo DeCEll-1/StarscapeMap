@@ -14,12 +14,44 @@ function RGBToHex(r, g, b, a = 1, includeAlpha = false) {
 
 function Sector(security) {
     let hex;
-    if (security == "Core") { hex = "#008000" }
+    if (security == "Core") { hex = "#00A000" }
     else if (security == "Secure") { hex = "#0000FF" }
     else if (security == "Contested") { hex = "#FFA500" }
     else if (security == "Unsecure") { hex = "#FF0000" }
     else if (security == "Wild") { hex = "#800080" }
     else (hex = '#FFFFFF')
+
+    return hex;
+}
+
+function Faction(
+    /** @type {import('./TypeDefs.js').StarSystem} */
+    system
+) {
+    let hex;
+    if (system.faction == "Neutral" && system.security == "Wild") { hex = "#535353" }
+    else if (system.faction == "Neutral") { hex = "#b3b3b3" }
+    else if (system.faction == "Foralkan") { hex = "#c82731" }
+    else if (system.faction == "Lycentian") { hex = "#0ca3d3" }
+    else if (system.faction == "Kavani") { hex = "#1fa625" }
+    else if (system.faction == "Syndicate") { hex = "#FE9C00" }
+    else if (system.faction == "TradeUnion") { hex = "#62E4DF" }
+
+    return hex;
+}
+
+function FactionBorders(
+    /** @type {import('./TypeDefs.js').StarSystem} */
+    system
+) {
+    let hex;
+    if (system.faction == "Neutral" && system.security == "Wild") { hex = "#535353" }
+    else if (system.faction == "Neutral") { hex = "#b3b3b3" }
+    else if (system.faction == "Foralkan") { hex = "#FB1F29" }
+    else if (system.faction == "Lycentian") { hex = "#21BAFB" }
+    else if (system.faction == "Kavani") { hex = "#29F92F" }
+    else if (system.faction == "Syndicate") { hex = "#FFC031" }
+    else if (system.faction == "TradeUnion") { hex = "#22FBF2" }
 
     return hex;
 }
@@ -63,4 +95,4 @@ function GradientTexture(source, destination) {
     return texture;
 }
 
-export { GradientTexture, Sector, Spice, RGBToHex };
+export { GradientTexture, Sector, Spice, Faction, FactionBorders, RGBToHex };

@@ -1,13 +1,14 @@
 "use strict";
 import * as THREE from 'three';
-import { Sector } from "./ColorConverter.js";
+import { Sector, Faction, FactionBorders } from "./ColorConverter.js";
 // @ts-ignore
 import { Text, BatchedText, preloadFont } from 'troika-three-text';
 import {
     /** @type {import('./TypeDefs.js').StarSystem[]} */
     mapData,
     /** @type {import('./TypeDefs.js').Connection[]} */
-    connectionsData
+    connectionsData,
+    bounds
 } from "./Main.js"
 
 // need default material for initilisations
@@ -48,7 +49,7 @@ function RenderSystems(scene) {
 
     // create our geometry that we gonna use for instances
     const sphere = new THREE.SphereGeometry(
-        8.5, // radius
+        6, // radius
         8, // sector count
         8  // stack count
     );
@@ -107,14 +108,17 @@ function RenderLinks(scene) {
     const tubeGeometry = new THREE.TubeGeometry(
         path,   // see path
         1,      // stack count
-        0.7,      // radius
+        1,      // radius
         3,     // sector count
         false
     );
+
+    const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
+
     // create the instanced mesh
     const instancedLinks = new THREE.InstancedMesh(
         tubeGeometry,             // our mesh we gonna make instances of
-        defaultMaterial,    // material
+        tubeMaterial,    // material
         connectionsData.length         // amount of instances we have
     );
 
@@ -219,6 +223,95 @@ async function RenderText(scene) {
     return batchText;
 }
 
+async function RenderBounds(scene) {
+    const lineWidth = 5;
+
+    for (const [key, points] of Object.entries(bounds)) {
+        const vertices = points.map(point => {
+            const x = (point.x - 180) / scale; // position[0] -> Three.js x
+            const y = 0; // 2D hull, set y to 0 (or use position[2] if needed)
+            const z = (point.y - 180) / scale; // position[1] -> Three.js z
+            return new THREE.Vector3(x, y, z);
+        });
+
+
+        // Close the loop by repeating the first point
+        vertices.push(vertices[0]);
+
+        // Create ribbon geometry
+        const positions = [];
+        const uvs = [];
+        for (let i = 0; i < vertices.length - 1; i++) {
+            const p1 = vertices[i];
+            const p2 = vertices[i + 1];
+
+            // Compute direction and perpendicular vector
+            const dx = p2.x - p1.x;
+            const dz = p2.z - p1.z;
+            const length = Math.sqrt(dx * dx + dz * dz);
+            const nx = -dz / length; // Perpendicular vector (rotated 90°)
+            const nz = dx / length;
+
+            // Add vertices for ribbon (two triangles per segment)
+            const w = lineWidth / 2;
+            positions.push(
+                p1.x + nx * w, p1.y, p1.z + nz * w, // Top-left
+                p1.x - nx * w, p1.y, p1.z - nz * w, // Bottom-left
+                p2.x + nx * w, p2.y, p2.z + nz * w, // Top-right
+                p1.x - nx * w, p1.y, p1.z - nz * w, // Bottom-left
+                p2.x - nx * w, p2.y, p2.z - nz * w, // Bottom-right
+                p2.x + nx * w, p2.y, p2.z + nz * w  // Top-right
+            );
+
+            // UVs (still included, though not used for solid lines)
+            const uStart = i * length;
+            const uEnd = (i + 1) * length;
+            uvs.push(
+                uStart, 1, // Top-left
+                uStart, 0, // Bottom-left
+                uEnd, 1,   // Top-right
+                uStart, 0, // Bottom-left
+                uEnd, 0,   // Bottom-right
+                uEnd, 1    // Top-right
+            );
+        }
+
+        // Create BufferGeometry
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+
+        // Solid line shader material
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                color: { value: new THREE.Color(FactionBorders({ "faction": key })) }
+            },
+            vertexShader: `
+                void main() {
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 color;
+                void main() {
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `,
+            side: THREE.DoubleSide
+        });
+
+        // Create and add mesh
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+    }
+
+
+
+
+
+}
+
 function RenderSelection(scene) { // this initalises the selection renderer
     let size = 20;
     const geometry = new THREE.BoxGeometry(size, size, size);
@@ -233,7 +326,4 @@ function RenderSelection(scene) { // this initalises the selection renderer
     return cube;
 }
 
-export { RenderSystems }
-export { RenderLinks }
-export { RenderText }
-export { RenderSelection }
+export { RenderSystems, RenderLinks, RenderText, RenderSelection, RenderBounds }

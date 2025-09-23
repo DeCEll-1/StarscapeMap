@@ -5,9 +5,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // @ts-ignore
 import {
     CreateSystemSelectionRaycastEvent,
+
     CreateSpectralFilterEvent,
     CreateSecurityFilterEvent,
     CreateSpiceyFilterEvent,
+    CreateFactionFilterEvent,
+
     CreateSearchEvent,
     SetStuff,
     DisplaySelectionWindow
@@ -18,6 +21,7 @@ import {
     RenderSystems,
     RenderLinks,
     RenderText,
+    RenderBounds,
 } from './RenderHelper.js';
 // @ts-ignore
 import Stats from 'three/addons/libs/stats.module.js';
@@ -34,19 +38,24 @@ let mapData;
 
 /** @type {import('./TypeDefs.d.ts').Connection[]} */
 let connectionsData;
+
+let bounds;
+
 Promise.all([
     fetch(`${basePath}/Resources/Json/map.json`).then(r => r.json()),
-    fetch(`${basePath}/Resources/Json/cylinders.json`).then(r => r.json())
-]).then(([map, connections]) => {
+    fetch(`${basePath}/Resources/Json/cylinders.json`).then(r => r.json()),
+    fetch(`${basePath}/Resources/Json/bounds_concave.json`).then(r => r.json())
+]).then(([map, connections, boundsConcave]) => {
     mapData = map;
     connectionsData = connections;
+    bounds = boundsConcave;
 
     DisplaySelectionWindow(mapData.find(s => s.name === "The Citadel"));
     init();
 });
 
 
-export { mapData, connectionsData }
+export { mapData, connectionsData, bounds }
 
 const stats = new Stats()
 const container = document.getElementById("mapCanvas");
@@ -73,6 +82,26 @@ styleElem.innerHTML += ".SecureLI::marker { color: " + Sector("Secure") + " ;}\n
 styleElem.innerHTML += ".ContestedLI::marker { color: " + Sector("Contested") + " ;}\n";
 styleElem.innerHTML += ".UnsecureLI::marker { color: " + Sector("Unsecure") + " ;}\n";
 styleElem.innerHTML += ".WildLI::marker { color: " + Sector("Wild") + " ;}\n";
+
+function loadRadioButtonState() {
+    const savedRadioId = localStorage.getItem('StarColoring');
+    if (savedRadioId) {
+        const radioButton = document.getElementById(savedRadioId);
+        if (radioButton) {
+            radioButton.checked = true;
+            if (savedRadioId === 'RadioButtonSpectral') {
+                radioButton.dispatchEvent(new Event('change'));
+            } else if (savedRadioId === 'RadioButtonSecurity') {
+                radioButton.dispatchEvent(new Event('change'));
+            } else if (savedRadioId === 'RadioButtonSpice') {
+                radioButton.dispatchEvent(new Event('change'));
+            } else if (savedRadioId === 'RadioButtonFaction') {
+                radioButton.dispatchEvent(new Event('change'));
+            }
+        }
+    }
+}
+
 
 function init() {
     // #region Scene Setup
@@ -166,6 +195,7 @@ function init() {
     let cube = RenderSelection(scene);
     instancedCylinders = RenderLinks(scene);
     instancedSpheres = RenderSystems(scene);
+    RenderBounds(scene);
 
     window.flipSystemVisibility(document.getElementById("CBSystems"))
     window.flipLinkVisibility(document.getElementById("CBLinks"))
@@ -174,7 +204,11 @@ function init() {
     CreateSpectralFilterEvent(instancedSpheres, instancedCylinders);
     CreateSecurityFilterEvent(instancedSpheres, instancedCylinders);
     CreateSpiceyFilterEvent(instancedSpheres, instancedCylinders);
+    CreateFactionFilterEvent(instancedSpheres, instancedCylinders);
+
     CreateSearchEvent(instancedSpheres, instancedCylinders);
+
+    loadRadioButtonState();
 
 
     stats.dom.style.position = "absolute";

@@ -1,5 +1,5 @@
 "use strict";
-import { Sector, Spice } from "./ColorConverter.js";
+import { Sector, Spice, Faction } from "./ColorConverter.js";
 import { GetClosestMatches } from "./SearchFunctions.js";
 import { mapData, connectionsData } from "./Main.js"
 import * as THREE from 'three';
@@ -33,8 +33,17 @@ function CreateSystemSelectionRaycastEvent(camera, meshes, mySelectionCube, cont
         raycaster.setFromCamera(mouse, camera);
         // an array of objects intersected
         const intersection = raycaster.intersectObject(meshes);
-        // if theres nothing just return
-        if (intersection.length == 0) return;
+
+        if (intersection.length == 0) {
+            // hit nothing, hide the selection shower thingamob
+            document.getElementById("selectionView").style.visibility = "hidden";
+            selectionCube.visible = false;
+            return;
+        } else {
+            document.getElementById("selectionView").style.visibility = "visible";
+            selectionCube.visible = true;
+        };
+
 
         // get the intersection instance id
         let id = intersection[0].instanceId;
@@ -159,6 +168,35 @@ function CreateSpiceyFilterEvent(sectors, links) {
 
                 if (connection.startSystem.spice == connection.endSystem.spice)
                     links.setColorAt(i, new THREE.Color(Spice(connection.startSystem.spice)))
+                else
+                    links.setColorAt(i, new THREE.Color(0x404040))
+            }
+            links.instanceColor.needsUpdate = true;
+            // #endregion
+        }
+    });
+}
+
+function CreateFactionFilterEvent(sectors, links) {
+    document.getElementById("RadioButtonFaction").addEventListener("change", function (e) {
+        if (!this.checked) return;
+        if (mapData) {
+            // #region map
+            for (let i = 0; i < mapData.length; i++) {
+                const sector = mapData[i];
+                sectors.setColorAt(i, new THREE.Color(Faction(sector)))
+            }
+            sectors.instanceColor.needsUpdate = true;
+            // #endregion
+        }
+
+        if (connectionsData) {
+            // #region links
+            for (let i = 0; i < connectionsData.length; i++) {
+                const connection = connectionsData[i];
+
+                if (connection.startSystem.faction == connection.endSystem.faction)
+                    links.setColorAt(i, new THREE.Color(Faction(connection.startSystem)))
                 else
                     links.setColorAt(i, new THREE.Color(0x404040))
             }
@@ -331,4 +369,4 @@ function DisplaySelectionWindow(system) {
 
 }
 
-export { CreateSystemSelectionRaycastEvent, CreateSpectralFilterEvent, CreateSecurityFilterEvent, CreateSpiceyFilterEvent, CreateSearchEvent, SetStuff, DisplaySelectionWindow }
+export { CreateSystemSelectionRaycastEvent, CreateSpectralFilterEvent, CreateSecurityFilterEvent, CreateSpiceyFilterEvent, CreateSearchEvent, SetStuff, DisplaySelectionWindow, CreateFactionFilterEvent }

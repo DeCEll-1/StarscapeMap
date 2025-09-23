@@ -133,20 +133,29 @@
                         <div class="map-menu-container input-group-sm mt-2" style="">
                             <label>Star Coloring</label>
                             <hr class="m-0" style="border: 1px solid white;">
+
                             <div class="form-check form-check-inline text-center">
                                 <input class="form-check-input form-control" type="radio" name="StarColoring"
-                                    id="RadioButtonSecurity" value="RadioButtonSecurity" checked>
+                                    id="RadioButtonSecurity" value="RadioButtonSecurity">
                                 <label class="form-check-label text-light" for="RadioButtonSecurity">Security</label>
                             </div>
+
                             <div class="form-check form-check-inline text-center">
                                 <input class="form-check-input form-control" type="radio" name="StarColoring"
                                     id="RadioButtonSpectral" value="RadioButtonSpectral">
                                 <label class="form-check-label text-light" for="RadioButtonSpectral">Spectral</label>
                             </div>
+
                             <div class="form-check form-check-inline text-center">
                                 <input class="form-check-input form-control" type="radio" name="StarColoring"
                                     id="RadioButtonSpice" value="RadioButtonSpice">
                                 <label class="form-check-label text-light" for="RadioButtonSpice">Spice</label>
+                            </div>
+
+                            <div class="form-check form-check-inline text-center">
+                                <input class="form-check-input form-control" type="radio" name="StarColoring"
+                                    id="RadioButtonFaction" value="RadioButtonFaction">
+                                <label class="form-check-label text-light" for="RadioButtonFaction">Faction</label>
                             </div>
                         </div>
 
@@ -155,7 +164,7 @@
                             <hr class="m-0" style="border: 1px solid white;">
                             <div class="form-check form-check-inline text-center">
                                 <input class="form-check-input form-control" type="checkbox" id="CBSystems"
-                                    value="CBSystems" onclick="flipSystemVisibility(this)" checked>
+                                    value="CBSystems">
 
                                 <label class="form-check-label text-light" for="CBSystems">
                                     Systems
@@ -164,14 +173,14 @@
 
                             <div class="form-check form-check-inline text-center">
                                 <input class="form-check-input form-control" type="checkbox" id="CBLinks"
-                                    value="CBLinks" onclick="flipLinkVisibility(this)" checked>
+                                    value="CBLinks">
 
                                 <label class="form-check-label text-light" for="CBLinks">Links</label>
                             </div>
 
                             <div class="form-check form-check-inline text-center">
                                 <input class="form-check-input form-control" type="checkbox" id="CBSystemNames"
-                                    value="CBSystemNames" onclick="flipTextVisibility(this)" checked>
+                                    value="CBSystemNames">
 
                                 <label class="form-check-label text-light" for="CBSystemNames">
                                     System Names
@@ -196,18 +205,20 @@
 
                 </div>
 
-                <div class="position-absolute row w-100 canvas-ignore" style="pointer-events: none;">
-                    <div class="col-4 canvas-ignore" style="pointer-events: none;"></div>
-                    <div class="col-4 canvas-ignore" style="margin-top: 60vh; height: 18vh; pointer-events: all;">
+                <div id="selectionView" class="position-absolute row w-100 canvas-ignore" style="pointer-events: none;">
+                    <div class="col-4 canvas-ignore"></div>
+                    <div class="col-4" style="margin-top: 60vh; height: 18vh; pointer-events: none;">
                         <div class="h-100 d-flex flex-column justify-content-between" style="margin: 0 13%;">
 
-                            <div class="selection-box-border bg-system-name" style="height: 45%;">
+                            <div class="selection-box-border bg-system-name canvas-ignore "
+                                style="height: 45%; pointer-events: all;">
                                 <div id="selectionText" class="text-center align-items-center mt-1">
-                                    SELECTION_ID
+                                    LOADING
                                 </div>
                             </div>
 
-                            <div class="text-center container m-0 p-0" style="height: 51%;">
+                            <div class="text-center container m-0 p-0 canvas-ignore"
+                                style="height: 51%; pointer-events: all;">
 
                                 <div class="container">
                                     <div class="row">
@@ -244,6 +255,10 @@
         </div>
     </div>
 
+    <script src="./lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="./js/Map/Main.js"></script>
+    <script src="./js/LayoutJS.js" asp-append-version="true"></script>
+
     <script type="module">
         import { instancedCylinders, instancedSpheres, instancedText } from './js/Map/Main.js';
 
@@ -273,6 +288,56 @@
             el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
         }
 
+        // Save checkbox state to localStorage
+        function saveCheckboxState(checkboxId) {
+            const checkbox = document.getElementById(checkboxId);
+            localStorage.setItem(checkboxId, checkbox.checked);
+        }
+
+        // Load checkbox state from localStorage
+        function loadCheckboxState(checkboxId) {
+            const checkbox = document.getElementById(checkboxId);
+            const savedState = localStorage.getItem(checkboxId);
+            if (savedState !== null) {
+                checkbox.checked = savedState === 'true';
+                // Trigger the associated visibility function
+                if (checkboxId === 'CBSystems') {
+                    flipSystemVisibility(checkbox);
+                } else if (checkboxId === 'CBLinks') {
+                    flipLinkVisibility(checkbox);
+                } else if (checkboxId === 'CBSystemNames') {
+                    flipTextVisibility(checkbox);
+                }
+            }
+        }
+
+        // Update the onclick handlers to save state
+        document.getElementById('CBSystems').onclick = function () {
+            flipSystemVisibility(this);
+            saveCheckboxState('CBSystems');
+        };
+
+        document.getElementById('CBLinks').onclick = function () {
+            flipLinkVisibility(this);
+            saveCheckboxState('CBLinks');
+        };
+
+        document.getElementById('CBSystemNames').onclick = function () {
+            flipTextVisibility(this);
+            saveCheckboxState('CBSystemNames');
+        };
+
+        // Load checkbox states when the page loads
+        document.addEventListener('DOMContentLoaded', async function () {
+            while (instancedCylinders == null || instancedSpheres == null || instancedText == null) {
+                await new Promise(r => setTimeout(r, 500));
+            }
+
+            loadCheckboxState('CBSystems');
+            loadCheckboxState('CBLinks');
+            loadCheckboxState('CBSystemNames');
+        });
+
         window.flipSystemVisibility = (el) => {
             instancedSpheres.visible = el.checked;
         }
@@ -285,11 +350,29 @@
             instancedText.visible = el.checked;
         }
 
+        function saveRadioButtonState() {
+            const checkedRadio = document.querySelector('input[name="StarColoring"]:checked');
+            if (checkedRadio) {
+                localStorage.setItem('StarColoring', checkedRadio.id);
+            }
+        }
+
+
+        function setupRadioButtonEvents() {
+            const radioButtons = document.querySelectorAll('input[name="StarColoring"]');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    saveRadioButtonState();
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Assuming sectors and links are available in the global scope or passed appropriately
+            setupRadioButtonEvents();
+        });
     </script>
 
-    <script src="./lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="./js/Map/Main.js"></script>
-    <script src="./js/LayoutJS.js" asp-append-version="true"></script>
 </body>
 
 </html>
