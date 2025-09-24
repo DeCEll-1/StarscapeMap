@@ -60,7 +60,7 @@ export { mapData, connectionsData, bounds }
 const stats = new Stats()
 const container = document.getElementById("mapCanvas");
 let camera, scene, renderer, controls;
-
+let frame = 0;
 
 
 window.addEventListener("resize", () => {
@@ -102,7 +102,7 @@ function loadRadioButtonState() {
     }
 }
 
-
+let updateTextVisibility;
 function init() {
     // #region Scene Setup
     // create our scene & camera
@@ -186,11 +186,11 @@ function init() {
 
     // #region Initalise Rendering
     SetStuff(camera, controls);
-    RenderText(scene).then(res => {
-        instancedText = res;
+    RenderText(scene, camera).then(res => {
+        instancedText = res.batchText;
+        updateTextVisibility = res.updateTextVisibility;
         window.flipTextVisibility(document.getElementById("CBSystemNames"));
-    }
-    );
+    });
 
     let cube = RenderSelection(scene);
     instancedCylinders = RenderLinks(scene);
@@ -211,20 +211,26 @@ function init() {
     loadRadioButtonState();
 
 
-    stats.dom.style.position = "absolute";
-    stats.dom.style.marginTop = 40;
+    stats.dom.style.position = "inherit";
+    // stats.dom.style.marginTop = 40;
     stats.dom.style.removeProperty("top");
     stats.dom.style.removeProperty("left");
 
-    //container.prepend(stats.dom);
+
+    document.getElementById("statsContainer").append(stats.dom);
 
 
     // #endregion
 
     // #region Main Render Loop
+
     function animate() {
         requestAnimationFrame(animate);
         controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+
+        if (frame % 60 == 0)
+            if (updateTextVisibility != null)
+                updateTextVisibility.call();
 
         cube.rotation.x += 0.01;
         cube.rotation.y += 0.01;
@@ -232,6 +238,7 @@ function init() {
 
         stats.update()
 
+        frame++;
         renderer.render(scene, camera);
     }
 

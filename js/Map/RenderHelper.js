@@ -180,47 +180,103 @@ function RenderLinks(scene) {
 const repoName = "StarscapeMap"; // replace with your repo name
 const basePath = window.location.hostname === "127.0.0.1" ? "." : `/${repoName}`;
 
-async function RenderText(scene) {
+async function RenderText(scene, camera) {
 
     let i = 0;
     // https://github.com/protectwise/troika/blob/e43e18f1d4754107136b73ee05c410d160469379/packages/troika-three-text/src/BatchedText.js
     const batchText = new BatchedText();
 
-    let loadingStatusElement = document.getElementById("loadingStatus")
-    let loadingTextElement = document.getElementById("loadingText")
+    const textData = []; // Store text data for dynamic loading
+
+    let loadingStatusElement = document.getElementById("loadingStatus");
+    let loadingTextElement = document.getElementById("loadingText");
 
     loadingStatusElement.style.visibility = "visible";
     loadingStatusElement.style.height = "auto";
 
-    const syncPromises = mapData.map(system => {
+    // Create a Three.js Frustum object for visibility checks
+    const frustum = new THREE.Frustum();
+    const matrix = new THREE.Matrix4();
+
+    // Store text data (not rendering yet)
+    mapData.forEach(system => {
+        const position = new THREE.Vector3(
+            (system.position[0] - 180 + 15) / scale,
+            (system.position[2] + 10) / scale,
+            (system.position[1] - 180) / scale
+        );
+        textData.push({
+            name: system.name,
+            position,
+            textObject: null // Will hold the Text object when loaded
+        });
+    });
+
+    // Function to create a Text object
+    function createText(systemName, position) {
         const text = new Text();
-        text.text = system.name;
+        text.text = systemName;
         text.font = `${basePath}/Resources/Fonts/MICROSS.TTF`;
         text.fontSize = 10.5;
         text.anchorX = 'center';
         text.anchorY = 'middle';
         text.color = 0xffffff;
 
-        // so it looks at the camera
+        // Rotate to face the camera
         text.rotateX(Math.PI / -2);
         text.rotateZ(Math.PI / 2);
 
-        // a bit under the system
-        text.position.x = (system.position[0] - 180 + 15) / scale;
-        // increase its height so its visible
-        text.position.y = (system.position[2] + 10) / scale;
-        text.position.z = (system.position[1] - 180) / scale;
+        // Set position
+        text.position.copy(position);
 
-        batchText.addText(text);
-    });
+        return text;
+    }
 
-    await new Promise(resolve => batchText.sync(resolve));
+    // Function to update text based on camera frustum
+    async function updateTextVisibility() {
+        // Update frustum from camera
+        matrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+        frustum.setFromProjectionMatrix(matrix);
+
+        // Track whether changes were made to avoid unnecessary syncs
+        let needsSync = false;
+
+        // Process each text
+        textData.forEach(data => {
+            const isVisible = frustum.containsPoint(data.position);
+
+            if (isVisible && !data.textObject) {
+                // Load text if visible and not yet loaded
+                data.textObject = createText(data.name, data.position);
+                batchText.addText(data.textObject);
+                needsSync = true;
+            } else if (!isVisible && data.textObject) {
+                // Unload text if not visible and loaded
+                batchText.removeText(data.textObject); // Assumes Troika supports removeText
+                data.textObject = null;
+                needsSync = true;
+            }
+        });
+
+        // Sync BatchedText if changes were made
+        if (needsSync) {
+            await new Promise(resolve => batchText.sync(resolve));
+        }
+    }
+
+    // Initial visibility update
+    await updateTextVisibility();
 
     loadingStatusElement.style.visibility = "hidden";
     loadingStatusElement.style.height = "0";
 
     scene.add(batchText);
-    return batchText;
+
+    // Return batchText and update function for use in the render loop
+    return {
+        batchText,
+        updateTextVisibility
+    };
 }
 
 function RenderBounds(scene) {
