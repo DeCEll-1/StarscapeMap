@@ -302,6 +302,9 @@ function focusOn(start, end) {
     let endVector = new THREE.Vector3(end.x, end.y, end.z);
     let loc = new THREE.Vector3(start.x, start.y, start.z);
 
+    document.getElementById("selectionView").style.visibility = "visible";
+    selectionCube.visible = true;
+
     runFuncInterpolation((t) => {
         selectionCube.position.x = endVector.x;
         selectionCube.position.y = endVector.y;
