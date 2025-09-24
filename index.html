@@ -115,12 +115,9 @@
             <div id="mapCanvas" class="w-100 h-100" style="height:100vh; position:relative;">
                 <div class="position-absolute canvas-ignore" style="width:22%">
                     <div class="position-absolute" style="width:49%">
-                        <div class="map-menu-container input-group-sm" style="">
-                            <div class="">
-                                <label for="">Search</label>
-                                <input type="text" class="form-control map-menu-input-text" autocomplete="off"
-                                    placeholder="System name" aria-label="System name" id="TBSystemSearch">
-                            </div>
+                        <div class="map-menu-container input-group-sm" style="" data-title="Search">
+                            <input type="text" class="form-control map-menu-input-text" autocomplete="off"
+                                placeholder="System name" aria-label="System name" id="TBSystemSearch">
 
                             <div id="loadingStatus" style="visibility: hidden; height: 0;">
                                 <label id="loadingText" for="loadingAnimation"></label>
@@ -130,9 +127,7 @@
                             </div>
                         </div>
 
-                        <div class="map-menu-container input-group-sm mt-2" style="">
-                            <label>Star Coloring</label>
-                            <hr class="m-0" style="border: 1px solid white;">
+                        <div class="map-menu-container input-group-sm mt-2" style="" data-title="Star Coloring">
 
                             <div class="form-check form-check-inline text-center">
                                 <input class="form-check-input form-control" type="radio" name="StarColoring"
@@ -159,9 +154,7 @@
                             </div>
                         </div>
 
-                        <div class="map-menu-container input-group-sm mt-2" style="">
-                            <label>Map Layers</label>
-                            <hr class="m-0" style="border: 1px solid white;">
+                        <div class="map-menu-container input-group-sm mt-2" style="" data-title="Map Layers">
                             <div class="form-check form-check-inline text-center">
                                 <input class="form-check-input form-control" type="checkbox" id="CBSystems"
                                     value="CBSystems">
@@ -198,22 +191,19 @@
 
                         </div>
 
-                        <div id="statsContainer" class="map-menu-container input-group-sm mt-2" style="">
-                            <label>Stats</label>
-                            <hr class="m-0" style="border: 1px solid white;">
+                        <div id="statsContainer" class="map-menu-container input-group-sm mt-2" style=""
+                            data-title="Stats">
                         </div>
 
                     </div>
 
                     <div id="searchResultsContainer" class="map-menu-container input-group-sm float-end"
-                        style="width: 49%; visibility: hidden; height: 0px; padding: 0;">
+                        style="width: 49%; visibility: hidden; height: 0px; padding: 0;" data-title="Search Results">
                         <div>
-                            <label>Search Results</label>
-                            <div class="float-end">
+                            <div class="float-end" style="height: auto; margin-top: -35px;">
                                 <label onclick="clearValue('TBSystemSearch')">X</label>
                             </div>
                         </div>
-                        <hr class="m-0" style="border: 1px solid white;">
                         <ul class="ps-3 mb-0" id="searchResults">
                         </ul>
                     </div>

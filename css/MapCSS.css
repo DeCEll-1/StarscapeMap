@@ -7,6 +7,17 @@
     padding: 5px;
 }
 
+.map-menu-container::before {
+    content: attr(data-title);
+    display: inline-block;
+    width: 100%;
+    border: 0px solid #5c5c5c;
+    border-bottom-width: 1px;
+    margin-bottom: 4px;
+    pointer-events: none;
+}
+
+
 * {
     user-select: none;
 }
