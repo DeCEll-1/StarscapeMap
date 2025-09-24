@@ -75,7 +75,7 @@ window.addEventListener("resize", () => {
 
 var styleElem = document.head.appendChild(document.createElement("style"));
 
-let instancedText; let instancedCylinders; let instancedSpheres;
+let instancedText; let instancedCylinders; let instancedSpheres; let borderMeshes;
 
 styleElem.innerHTML = ".CoreLI::marker { color: " + Sector("Core") + " ;}\n";
 styleElem.innerHTML += ".SecureLI::marker { color: " + Sector("Secure") + " ;}\n";
@@ -195,7 +195,7 @@ function init() {
     let cube = RenderSelection(scene);
     instancedCylinders = RenderLinks(scene);
     instancedSpheres = RenderSystems(scene);
-    RenderBounds(scene);
+    borderMeshes = RenderBounds(scene);
 
     window.flipSystemVisibility(document.getElementById("CBSystems"))
     window.flipLinkVisibility(document.getElementById("CBLinks"))
@@ -239,4 +239,4 @@ function init() {
     animate();
     // #endregion
 }
-export { instancedCylinders, instancedSpheres, instancedText }
+export { instancedCylinders, instancedSpheres, instancedText, borderMeshes }

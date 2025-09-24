@@ -186,6 +186,16 @@
                                     System Names
                                 </label>
                             </div>
+
+                            <div class="form-check form-check-inline text-center">
+                                <input class="form-check-input form-control" type="checkbox" id="CBFactionBorders"
+                                    value="CBFactionBorders">
+
+                                <label class="form-check-label text-light" for="CBFactionBorders">
+                                    Faction Borders
+                                </label>
+                            </div>
+
                         </div>
 
                     </div>
@@ -260,7 +270,7 @@
     <script src="./js/LayoutJS.js" asp-append-version="true"></script>
 
     <script type="module">
-        import { instancedCylinders, instancedSpheres, instancedText } from './js/Map/Main.js';
+        import { instancedCylinders, instancedSpheres, instancedText, borderMeshes } from './js/Map/Main.js';
 
         window.isNumeric = (str) => {
             return !isNaN(str) && !isNaN(parseFloat(str));
@@ -307,6 +317,8 @@
                     flipLinkVisibility(checkbox);
                 } else if (checkboxId === 'CBSystemNames') {
                     flipTextVisibility(checkbox);
+                } else if (checkboxId === 'CBFactionBorders') {
+                    flipBorderVisibility(checkbox);
                 }
             }
         }
@@ -327,15 +339,21 @@
             saveCheckboxState('CBSystemNames');
         };
 
+        document.getElementById('CBFactionBorders').onclick = function () {
+            flipBorderVisibility(this);
+            saveCheckboxState('CBFactionBorders');
+        };
+
         // Load checkbox states when the page loads
         document.addEventListener('DOMContentLoaded', async function () {
-            while (instancedCylinders == null || instancedSpheres == null || instancedText == null) {
+            while (instancedCylinders == null || instancedSpheres == null || instancedText == null || borderMeshes == null) {
                 await new Promise(r => setTimeout(r, 500));
             }
 
             loadCheckboxState('CBSystems');
             loadCheckboxState('CBLinks');
             loadCheckboxState('CBSystemNames');
+            loadCheckboxState('CBFactionBorders')
         });
 
         window.flipSystemVisibility = (el) => {
@@ -348,6 +366,12 @@
 
         window.flipTextVisibility = (el) => {
             instancedText.visible = el.checked;
+        }
+
+        window.flipBorderVisibility = (el) => {
+            borderMeshes.forEach((borderMesh) => {
+                borderMesh.visible = el.checked;
+            });
         }
 
         function saveRadioButtonState() {

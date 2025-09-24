@@ -52,6 +52,8 @@ for faction, group in factions:
     points = list(zip(group["X"], group["Y"]))
     points = [(float(x), float(y)) for (x, y) in points]
     print(f"Faction: {faction}")
+    if faction == "Neutral":
+        continue
 
     # Skip if fewer than 3 points (can't form a polygon)
     if len(points) < 3:

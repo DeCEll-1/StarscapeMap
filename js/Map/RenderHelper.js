@@ -223,8 +223,9 @@ async function RenderText(scene) {
     return batchText;
 }
 
-async function RenderBounds(scene) {
+function RenderBounds(scene) {
     const lineWidth = 5;
+    let borders = []
 
     for (const [key, points] of Object.entries(bounds)) {
         const vertices = points.map(point => {
@@ -302,14 +303,12 @@ async function RenderBounds(scene) {
 
         // Create and add mesh
         const mesh = new THREE.Mesh(geometry, material);
+        borders.push(mesh);
         scene.add(mesh);
-
     }
 
 
-
-
-
+    return borders;
 }
 
 function RenderSelection(scene) { // this initalises the selection renderer
