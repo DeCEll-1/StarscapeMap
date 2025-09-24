@@ -96,3 +96,8 @@
 .dropdown-item:hover {
     background-color: inherit;
 }
+
+#statsDisplayContainer * {
+    /* width: 100% !important;
+    height: auto !important; */
+}

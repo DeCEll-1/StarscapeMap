@@ -213,9 +213,10 @@ function init() {
 
     stats.dom.style.position = "inherit";
     // stats.dom.style.marginTop = 40;
+    stats.dom.style.width = "100%";
+    stats.dom.id = "statsDisplayContainer";
     stats.dom.style.removeProperty("top");
     stats.dom.style.removeProperty("left");
-
 
     document.getElementById("statsContainer").append(stats.dom);
 
